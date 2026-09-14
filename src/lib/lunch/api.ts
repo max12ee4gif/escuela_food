@@ -111,3 +111,23 @@ export const reminderPreview = createServerFn({ method: "POST" }).handler(async 
   const { reminderPreviewData } = await import("./board.server");
   return reminderPreviewData();
 });
+
+export const addDish = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      name: z.string().min(1).max(80),
+      notes: z.string().max(280),
+      photo: z.string().max(400000),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { addDishData } = await import("./board.server");
+    return addDishData(data);
+  });
+
+export const deleteDish = createServerFn({ method: "POST" })
+  .validator(z.object({ id: z.string().min(1).max(80) }))
+  .handler(async ({ data }) => {
+    const { deleteDishData } = await import("./board.server");
+    return deleteDishData(data);
+  });

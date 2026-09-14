@@ -117,6 +117,7 @@ export type AdminBoard = {
       status: DayStatus;
     }
   >;
+  dishes: DishPreset[];
 };
 
 export type DishPreset = {
@@ -124,4 +125,5 @@ export type DishPreset = {
   name: string;
   photo: string;
   notes: string;
+  builtIn?: boolean;
 };
