@@ -6,7 +6,7 @@ export const LAST_PLATES_THRESHOLD = 3;
 
 export type Phase = "early" | "leftover" | "ended" | "cancelled" | "empty";
 export type PaymentMethod = "cash" | "online";
-export type PaymentStatus = "pending" | "cash" | "online" | "debt";
+export type PaymentStatus = "pending" | "cash" | "online" | "debt" | "none";
 export type DeliveryStatus = "reserved" | "delivered" | "noshow" | "cancelled";
 export type DayStatus = "open" | "closed" | "cancelled";
 
