@@ -117,7 +117,7 @@ export type AdminBoard = {
       status: DayStatus;
     }
   >;
-  dishes: DishPreset[];
+  dishes?: DishPreset[];
 };
 
 export type DishPreset = {
