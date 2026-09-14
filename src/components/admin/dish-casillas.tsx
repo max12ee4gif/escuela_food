@@ -16,6 +16,7 @@ type Props = {
 
 export function DishCasillas({ dishes, dishName, onPick, onRefresh }: Props) {
   const [extras, setExtras] = useState<DishPreset[]>([]);
+  const [showForm, setShowForm] = useState(false);
   const list = useMemo(() => {
     const base =
       dishes && dishes.length > 0
@@ -33,7 +34,7 @@ export function DishCasillas({ dishes, dishName, onPick, onRefresh }: Props) {
   return (
     <>
       <div>
-        <p className="mb-2 text-sm font-medium text-muted">Casillas de platillos</p>
+        <p className="mb-2 text-sm font-medium text-muted">Platillos rápidos</p>
         <div className="grid grid-cols-3 gap-2">
           {list.map((p) => (
             <div
@@ -50,9 +51,7 @@ export function DishCasillas({ dishes, dishName, onPick, onRefresh }: Props) {
                     Sin foto
                   </div>
                 )}
-                <span className="block truncate px-2 py-1 text-[11px] font-medium text-ink">
-                  {p.name}
-                </span>
+                <span className="block truncate px-2 py-1 text-[11px] font-medium text-ink">{p.name}</span>
               </button>
               {!p.builtIn && (
                 <button
@@ -63,7 +62,7 @@ export function DishCasillas({ dishes, dishName, onPick, onRefresh }: Props) {
                     try {
                       await deleteDish({ data: { id: p.id } });
                       setExtras((prev) => prev.filter((d) => d.id !== p.id));
-                      toast.success("Platillo quitado de las casillas.");
+                      toast.success("Platillo quitado.");
                       onRefresh();
                     } catch (err) {
                       toast.error(err instanceof Error ? err.message : "No se pudo borrar.");
@@ -75,68 +74,71 @@ export function DishCasillas({ dishes, dishName, onPick, onRefresh }: Props) {
               )}
             </div>
           ))}
+          <button
+            type="button"
+            onClick={() => setShowForm(true)}
+            className="flex h-full min-h-[72px] flex-col items-center justify-center rounded-md border border-dashed border-ink/40 bg-raised px-2 py-3 text-center"
+          >
+            <span className="text-2xl leading-none text-ink">+</span>
+            <span className="mt-1 text-[11px] font-medium text-ink">Otro platillo</span>
+          </button>
         </div>
       </div>
 
-      <div className="rounded-lg border border-line bg-raised p-3">
-        <p className="mb-2 text-sm font-medium text-ink">Agregar otra casilla</p>
-        <div className="flex flex-col gap-2">
-          <Input
-            placeholder="Nombre del platillo"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-          <Input
-            placeholder="Notas (opcional)"
-            value={newNotes}
-            onChange={(e) => setNewNotes(e.target.value)}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="h-10 w-full text-sm text-muted file:mr-3 file:h-9 file:rounded-sm file:border-0 file:bg-line file:px-3 file:text-sm file:font-medium file:text-ink"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              void compressImage(file)
-                .then(setNewPhoto)
-                .catch(() => toast.error("No se pudo leer la foto."));
-            }}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            disabled={adding || newName.trim().length < 2}
-            onClick={async () => {
-              setAdding(true);
-              try {
-                await addDish({
-                  data: { name: newName.trim(), notes: newNotes.trim(), photo: newPhoto },
-                });
-                const created: DishPreset = {
-                  id: "tmp-" + Date.now(),
-                  name: newName.trim(),
-                  notes: newNotes.trim(),
-                  photo: newPhoto,
-                  builtIn: false,
-                };
-                setExtras((prev) => [...prev, created]);
-                onPick(created);
-                setNewName("");
-                toast.success("Casilla agregada. Ya puedes publicarla.");
-                onRefresh();
-              } catch (err) {
-                toast.error(err instanceof Error ? err.message : "No se pudo agregar.");
-              } finally {
-                setAdding(false);
-              }
-            }}
-          >
-            {adding ? "Guardando…" : "Guardar casilla"}
-          </Button>
+      {showForm && (
+        <div className="rounded-lg border border-line bg-raised p-3">
+          <p className="mb-2 text-sm font-medium text-ink">Nueva casilla</p>
+          <div className="flex flex-col gap-2">
+            <Input placeholder="Nombre del platillo" value={newName} onChange={(e) => setNewName(e.target.value)} />
+            <Input placeholder="Notas (opcional)" value={newNotes} onChange={(e) => setNewNotes(e.target.value)} />
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="h-10 w-full text-sm text-muted file:mr-3 file:h-9 file:rounded-sm file:border-0 file:bg-line file:px-3 file:text-sm file:font-medium file:text-ink"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                void compressImage(file)
+                  .then(setNewPhoto)
+                  .catch(() => toast.error("No se pudo leer la foto."));
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              disabled={adding || newName.trim().length < 2}
+              onClick={async () => {
+                setAdding(true);
+                try {
+                  await addDish({
+                    data: { name: newName.trim(), notes: newNotes.trim(), photo: newPhoto },
+                  });
+                  const created: DishPreset = {
+                    id: "tmp-" + Date.now(),
+                    name: newName.trim(),
+                    notes: newNotes.trim(),
+                    photo: newPhoto,
+                    builtIn: false,
+                  };
+                  setExtras((prev) => [...prev, created]);
+                  onPick(created);
+                  setNewName("");
+                  setShowForm(false);
+                  toast.success("Casilla agregada. Ya puedes publicarla.");
+                  onRefresh();
+                } catch (err) {
+                  toast.error(err instanceof Error ? err.message : "No se pudo agregar.");
+                } finally {
+                  setAdding(false);
+                }
+              }}
+            >
+              {adding ? "Guardando…" : "Guardar casilla"}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
