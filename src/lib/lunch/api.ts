@@ -85,7 +85,7 @@ export const updateReservation = createServerFn({ method: "POST" })
   .validator(
     z.object({
       id: z.number().int(),
-      paymentStatus: z.enum(["pending", "cash", "online", "debt"]).optional(),
+      paymentStatus: z.enum(["pending", "cash", "online", "debt", "none"]).optional(),
       deliveryStatus: z.enum(["reserved", "delivered", "noshow", "cancelled"]).optional(),
     }),
   )
@@ -130,4 +130,49 @@ export const deleteDish = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { deleteDishData } = await import("./dishes.server");
     return deleteDishData(data);
+  });
+
+export const listDebts = createServerFn({ method: "GET" }).handler(async () => {
+  const { listDebtsData } = await import("./debts.server");
+  return listDebtsData();
+});
+
+export const adjustDebt = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      reservationId: z.number().int().nullable().optional(),
+      extraId: z.number().int().nullable().optional(),
+      deltaCents: z.number().int(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { adjustDebtData } = await import("./debts.server");
+    return adjustDebtData(data);
+  });
+
+export const clearDebt = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      reservationId: z.number().int().nullable().optional(),
+      extraId: z.number().int().nullable().optional(),
+      as: z.enum(["cash", "none"]),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { clearDebtData } = await import("./debts.server");
+    return clearDebtData(data);
+  });
+
+export const addExtraDebt = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      name: z.string().min(1).max(80),
+      phone: z.string().max(20),
+      amountCents: z.number().int().min(100).max(200000),
+      note: z.string().max(80),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { addExtraDebtData } = await import("./debts.server");
+    return addExtraDebtData(data);
   });
