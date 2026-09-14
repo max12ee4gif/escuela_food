@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Hoy Hay",
+      "hasCanvas": false,
+      "bodyTextLen": 319,
+      "bodyTextHash": "be8ee7207aa5ec70098e2c08383f58e4642faef35f55c76546d1cbcb16156626",
+      "bodyTextPrefix": "RESERVA PARA EL LUNES Tacos al pastor $10 Hasta las 8:00 AM del ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Hoy Hay",
+      "hasCanvas": false,
+      "bodyTextLen": 319,
+      "bodyTextHash": "be8ee7207aa5ec70098e2c08383f58e4642faef35f55c76546d1cbcb16156626",
+      "bodyTextPrefix": "RESERVA PARA EL LUNES Tacos al pastor $10 Hasta las 8:00 AM del ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}
