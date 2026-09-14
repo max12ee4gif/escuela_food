@@ -121,13 +121,13 @@ export const addDish = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const { addDishData } = await import("./board.server");
+    const { addDishData } = await import("./dishes.server");
     return addDishData(data);
   });
 
 export const deleteDish = createServerFn({ method: "POST" })
   .validator(z.object({ id: z.string().min(1).max(80) }))
   .handler(async ({ data }) => {
-    const { deleteDishData } = await import("./board.server");
+    const { deleteDishData } = await import("./dishes.server");
     return deleteDishData(data);
   });

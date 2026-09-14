@@ -1,4 +1,5 @@
 import type { Sql } from "@/lib/db";
+import { getSql } from "@/lib/db";
 import { DISH_PRESETS } from "./presets";
 
 export async function seedDishCatalog(sql: Sql): Promise<void> {
@@ -36,4 +37,41 @@ export async function listDishes(sql: Sql) {
   } catch {
     return DISH_PRESETS.map((p) => ({ ...p, builtIn: true }));
   }
+}
+
+export async function addDishData(input: {
+  name: string;
+  notes: string;
+  photo: string;
+}): Promise<{ id: string }> {
+  const sql = await getSql();
+  const { requireAdmin } = await import("./board.server");
+  await requireAdmin(sql);
+  await seedDishCatalog(sql);
+  const name = input.name.trim();
+  if (name.length < 2) throw new Error("Pon el nombre del platillo.");
+  const notes = input.notes.trim();
+  const photo = input.photo || "";
+  const base =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 40) || "platillo";
+  let id = base;
+  const clash = await sql<{ id: string }>`select id from dish_catalog where id = ${id}`;
+  if (clash[0]) id = `${id}-${Date.now().toString(36)}`;
+  await sql`
+    insert into dish_catalog (id, name, photo, notes, built_in)
+    values (${id}, ${name}, ${photo}, ${notes}, false)
+  `;
+  return { id };
+}
+
+export async function deleteDishData(input: { id: string }): Promise<{ ok: true }> {
+  const sql = await getSql();
+  const { requireAdmin } = await import("./board.server");
+  await requireAdmin(sql);
+  await sql`delete from dish_catalog where id = ${input.id} and built_in = false`;
+  return { ok: true };
 }
